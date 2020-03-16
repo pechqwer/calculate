@@ -1,7 +1,7 @@
-<template>
-  <div class="calculate" @keypress.native="addKeyCode">
+<template >
+  <div class="calculate" @keypress.prevent="addKeyCode">
     <div class="history" @click="returnHistory">{{ history }}</div>
-    <div class="display">{{ answer }}</div>
+    <div class="display" @click="addKeyCode">{{ answer }}</div>
     <button class="btn" @click="clear">AC</button>
     <button class="btn" @click="removeParameter"><=</button>
     <button class="btn" @click="addOperation('%')">%</button>
@@ -14,7 +14,7 @@
     <button class="btn" @click="addParameter(5)">5</button>
     <button class="btn" @click="addParameter(6)">6</button>
     <button class="btn" @click="addOperation('-')">-</button>
-    <button v-on:keyup.1="addParameter(1)" class="btn" @click="addParameter(1)">1</button>
+    <button class="btn" @click="addParameter(1)">1</button>
     <button class="btn" @click="addParameter(2)">2</button>
     <button class="btn" @click="addParameter(3)">3</button>
     <button class="btn" @click="addOperation('+')">+</button>
@@ -45,18 +45,17 @@ export default {
       } else if (event.key === "*") {
         await this.addOperation("x");
       } else if (event.key === "Backspace") {
+        console.log('sadas')
         await this.removeParameter();
       } else if (event.key === "Enter") {
         console.log("xxx", this.answer);
-        alert('Kuy phet')
-        // await this.result();
+        await this.result();
       }
     },
     returnHistory() {
       this.answer = this.history;
     },
     clear() {
-      alert('sdasdas')
       this.answer = "";
       this.bracket = false;
     },
@@ -65,39 +64,57 @@ export default {
       const divide = await this.answer.split("/");
       const plus = await this.answer.split("+");
       const minus = await this.answer.split("-");
+      const percent = await this.answer.split("%");
       console.log(this.answer);
       console.log(mutiple, divide, plus, minus);
+      console.log(mutiple[0] * mutiple[1]);
       if (
         mutiple.length == 2 &&
         divide.length == 1 &&
         plus.length == 1 &&
         minus.length == 1
       ) {
-        console.log("sds");
         this.history = this.answer;
         this.answer = mutiple[0] * mutiple[1];
-      }
-
-      if (
+      } else if (
         plus.length == 2 &&
         divide.length == 1 &&
         mutiple.length == 1 &&
+        [1, 2].includes(minus.length)
+      ) {
+        this.history = this.answer;
+        this.answer = Number(plus[0]) + Number(plus[1]);
+        console.log(Number(plus[0]) + Number(plus[1]));
+      } else if (
+        divide.length == 2 &&
+        mutiple.length == 1 &&
+        plus.length == 1 &&
         minus.length == 1
       ) {
-        console.log("sds");
         this.history = this.answer;
-        this.answer = mutiple[0] + mutiple[1];
+        this.answer = Number(divide[0]) / Number(divide[1]);
+      } else if (
+        minus.length == 2 &&
+        divide.length == 1 &&
+        plus.length == 1 &&
+        mutiple.length == 1
+      ) {
+        this.history = this.answer;
+        this.answer = Number(minus[0]) - Number(minus[1]);
+      } else if (percent.length == 2) {
+        this.history = this.answer;
+        this.answer = Number(percent[0]) * Number(percent[1]) / 100;
       }
     },
     removeParameter() {
-      this.answer = this.answer.slice(0, -1);
+      console.log(this.answer)
+      this.answer = this.answer.toString().slice(0, -1);
     },
     addParameter(value) {
       this.answer += value.toString();
       if (this.operation === false) this.operation = true;
     },
     addOperation(value) {
-      console.log(value);
       if (this.operation === true) {
         this.answer += value.toString();
         this.operation = false;
@@ -133,6 +150,8 @@ export default {
 }
 .display {
   grid-column: 1/5;
+  background-color: whitesmoke;
+  border: 50px;
   text-align: right;
 }
 .history {
