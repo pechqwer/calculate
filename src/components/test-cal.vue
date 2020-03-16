@@ -1,5 +1,5 @@
 <template >
-  <div class="calculate" @keypress.prevent="addKeyCode">
+  <div class="calculate" @keyup.prevent="addKeyCode">
     <div class="history" @click="returnHistory">{{ history }}</div>
     <div class="display" @click="addKeyCode">{{ answer }}</div>
     <button class="btn" @click="clear">AC</button>
@@ -71,8 +71,8 @@ export default {
       if (
         mutiple.length == 2 &&
         divide.length == 1 &&
-        plus.length == 1 &&
-        minus.length == 1
+        [1, 2].includes(plus.length) &&
+        [1, 2].includes(minus.length)
       ) {
         this.history = this.answer;
         this.answer = mutiple[0] * mutiple[1];
@@ -151,7 +151,7 @@ export default {
 .display {
   grid-column: 1/5;
   background-color: whitesmoke;
-  border: 50px;
+  border-style: solid;
   text-align: right;
 }
 .history {
